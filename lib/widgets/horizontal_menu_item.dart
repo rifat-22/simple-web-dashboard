@@ -1,18 +1,79 @@
+import 'package:first_web_app/constants/controllers.dart';
+import 'package:first_web_app/constants/style.dart';
 import 'package:flutter/material.dart';
 
+import 'package:get/get.dart';
+
+import 'custom_text.dart';
+
 class HorizontalMenuItem extends StatelessWidget {
-  String? itemName;
-  void Function? onTap;
-  HorizontalMenuItem(
-      {Key? key, this.itemName, this.onTap});
+  final String? itemName;
+  final Function? onTap;
+  HorizontalMenuItem({this.itemName, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     double _width =
         MediaQuery.of(context).size.width;
+
     return InkWell(
-        onTap: onTap,
-        onHover: ,
-        child: Container());
+        onTap: onTap as void Function(),
+        onHover: (value) {
+          value
+              ? menuController.onHover(itemName!)
+              : menuController
+                  .onHover("not hovering");
+        },
+        child: Obx(() => Container(
+              color: menuController
+                      .isHovering(itemName!)
+                  ? lightGrey.withOpacity(.1)
+                  : Colors.transparent,
+              child: Row(
+                children: [
+                  Visibility(
+                    visible: menuController
+                            .isHovering(
+                                itemName!) ||
+                        menuController
+                            .isActive(itemName!),
+                    maintainSize: true,
+                    maintainAnimation: true,
+                    maintainState: true,
+                    child: Container(
+                      width: 6,
+                      height: 40,
+                      color: dark,
+                    ),
+                  ),
+                  SizedBox(width: _width / 88),
+                  Padding(
+                    padding:
+                        const EdgeInsets.all(16),
+                    child: menuController
+                        .returnIconFor(itemName!),
+                  ),
+                  if (!menuController
+                      .isActive(itemName!))
+                    Flexible(
+                        child: CustomText(
+                      text: itemName,
+                      color: menuController
+                              .isHovering(
+                                  itemName!)
+                          ? dark
+                          : lightGrey,
+                    ))
+                  else
+                    Flexible(
+                        child: CustomText(
+                      text: itemName,
+                      color: dark,
+                      size: 18,
+                      weight: FontWeight.bold,
+                    ))
+                ],
+              ),
+            )));
   }
 }
